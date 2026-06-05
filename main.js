@@ -2,7 +2,24 @@ import { LinkedList } from "./linkedList.js";
 
 class HashMap {
   constructor() {
-    this.buckets = [new LinkedList(), new LinkedList(), new LinkedList()];
+    this.buckets = [
+      new LinkedList(),
+      new LinkedList(),
+      new LinkedList(),
+      new LinkedList(),
+      new LinkedList(),
+      new LinkedList(),
+      new LinkedList(),
+      new LinkedList(),
+      new LinkedList(),
+      new LinkedList(),
+      new LinkedList(),
+      new LinkedList(),
+      new LinkedList(),
+      new LinkedList(),
+      new LinkedList(),
+      new LinkedList(),
+    ];
     this.loadCapacity = this.buckets.length;
     this.loadFactor = 0.75;
   }
@@ -13,11 +30,11 @@ class HashMap {
 
     const primeNumber = 31;
     for (let i = 0; i < key.length; i++) {
-      hashCode = primeNumber * hashCode + key.charCodeAt(i);
-      hashCode % 16;
+      hashCode =
+        (primeNumber * hashCode + key.charCodeAt(i)) % this.buckets.length;
     }
 
-    return hashCode % 3;
+    return hashCode;
   }
 
   set(key, value) {
@@ -34,23 +51,41 @@ class HashMap {
       this.buckets[h].append({ [key]: value });
     }
 
-    // if load factor is reached, double bucket size
+    // when load factor is reached, create a new bucket with double the size
     const total = this.length();
     if (total > this.loadCapacity * this.loadFactor) {
-      const existingNodes = this.buckets;
+      const prevBuckets = this.buckets;
       this.buckets = [];
 
+      // grow bucket size
       for (let i = 0; i < 2 * this.loadCapacity; i++) {
         this.buckets = this.buckets.concat(new LinkedList());
       }
 
-      // keeps looping existingNodes more than its length; because after set(pass), it's length is now 6
-      for (let i = 0; i < existingNodes.length; i++) {
-        let keyValues = existingNodes[i].allKeyValues();
-        for (const item of keyValues) {
-          this.set(...item[0]);
-        }
+      // reseed prevBuckets
+      let newArray = [];
+      for (let i = 0; i < prevBuckets.length; i++) {
+        const keyValues = prevBuckets[i].allKeyValues();
+        newArray = newArray.concat(...keyValues);
       }
+
+      newArray.forEach((item) => {
+        const previousKey = item[0];
+        const previousValue = item[1];
+
+        const h = this.hash(previousKey);
+        if (this.buckets[h]) {
+          this.buckets[h].containsKey(previousKey, previousValue);
+          if (
+            this.buckets[h].containsKey(previousKey, previousValue) === false
+          ) {
+            this.buckets[h].append({ [previousKey]: previousValue });
+          }
+        } else {
+          this.buckets[h] = new LinkedList();
+          this.buckets[h].append({ [previousKey]: previousValue });
+        }
+      });
     }
 
     console.log(this.buckets);
@@ -58,29 +93,32 @@ class HashMap {
 
   // takes one argument as a key and returns the value that is assigned to this key
   get(key) {
-    let result = "";
     for (let i = 0; i < this.buckets.length; i++) {
-      result = this.buckets[i].getKey(key);
+      if (this.buckets[i].getKey(key)) {
+        return this.buckets[i].getKey(key);
+      }
     }
-    return result;
+    return null;
   }
 
   // takes a key as an argument and returns true or false based on whether or not the key is in the hash map
   has(key) {
-    let result = "";
     for (let i = 0; i < this.buckets.length; i++) {
-      result = this.buckets[i].hasKey(key);
+      if (this.buckets[i].hasKey(key) === true) {
+        return true;
+      }
     }
-    return result;
+    return false;
   }
 
   // takes a key as an argument. If the given key is in the hash map, it should remove the entry with that key and return true. If the key isn’t in the hash map, it should return false.
   remove(key) {
-    let result = "";
     for (let i = 0; i < this.buckets.length; i++) {
-      result = this.buckets[i].removeKey(key);
+      if (this.buckets[i].removeKey(key) === true) {
+        return true;
+      }
     }
-    return result;
+    return false;
   }
 
   // returns the number of stored keys in the hash map
@@ -97,7 +135,6 @@ class HashMap {
     for (let i = 0; i < this.buckets.length; i++) {
       this.buckets[i].removeAll();
     }
-    console.log(this.buckets);
   }
 
   // returns an array containing all the keys inside the hash map
@@ -132,9 +169,3 @@ class HashMap {
 }
 
 export { HashMap };
-
-/* whenever you access the bucket through index
-  if (h < 0 || h >= buckets.length) {
-  throw new Error("Trying to access index out of bounds");
-}
-  */
