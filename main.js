@@ -37,10 +37,10 @@ class HashMap {
     return hashCode;
   }
 
+  // if a key already exists, the old value is overwritten. if no key is found, add key-value pair to bucket.
   set(key, value) {
     const h = this.hash(key);
 
-    // if a key already exists, the old value is overwritten. if no key is found, add key-value pair to bucket.
     if (this.buckets[h]) {
       this.buckets[h].containsKey(key, value);
       if (this.buckets[h].containsKey(key, value) === false) {
@@ -51,21 +51,20 @@ class HashMap {
       this.buckets[h].append({ [key]: value });
     }
 
-    // when load factor is reached, create a new bucket with double the size
-    const total = this.length();
-    if (total > this.loadCapacity * this.loadFactor) {
+    // increase capacity when load factor is reached
+    if (this.length() > this.loadCapacity * this.loadFactor) {
       const prevBuckets = this.buckets;
       this.buckets = [];
 
-      // grow bucket size
+      // double the storage capacity 
       for (let i = 0; i < 2 * this.loadCapacity; i++) {
         this.buckets = this.buckets.concat(new LinkedList());
       }
 
-      // reseed prevBuckets
+      // redistribute prevBuckets
       let newArray = [];
       for (let i = 0; i < prevBuckets.length; i++) {
-        const keyValues = prevBuckets[i].allKeyValues();
+        const keyValues = prevBuckets[i].pair();
         newArray = newArray.concat(...keyValues);
       }
 
@@ -111,7 +110,7 @@ class HashMap {
     return false;
   }
 
-  // takes a key as an argument. If the given key is in the hash map, it should remove the entry with that key and return true. If the key isn’t in the hash map, it should return false.
+  // takes a key as an argument. if the given key is in the hash map, it should remove the entry with that key and return true. if the key isn’t in the hash map, it should return false.
   remove(key) {
     for (let i = 0; i < this.buckets.length; i++) {
       if (this.buckets[i].removeKey(key) === true) {
@@ -133,7 +132,7 @@ class HashMap {
   // removes all entries in the hash map
   clear() {
     for (let i = 0; i < this.buckets.length; i++) {
-      this.buckets[i].removeAll();
+      this.buckets[i].removeNodes();
     }
   }
 
@@ -161,7 +160,7 @@ class HashMap {
   entries() {
     let result = [];
     for (let i = 0; i < this.buckets.length; i++) {
-      const keyValues = this.buckets[i].allKeyValues();
+      const keyValues = this.buckets[i].pair();
       result = result.concat(keyValues);
     }
     return result;

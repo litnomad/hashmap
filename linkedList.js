@@ -6,10 +6,9 @@ class Node {
 }
 
 class LinkedList {
-  // head is null when list is empty
   head = null;
 
-  // adds a new node containing value to the end of the list
+  // adds a new node to the end of the list
   append(value, nextNode) {
     // adds a new node to head if list is empty
     if (this.head == null) {
@@ -37,11 +36,12 @@ class LinkedList {
     }
   }
 
-  removeAll() {
+  // clear nodes
+  removeNodes() {
     this.head = null;
   }
 
-  // returns the total nodes in the list
+  // total nodes
   size() {
     let current = this.head;
     let counter = 0;
@@ -54,6 +54,7 @@ class LinkedList {
     return counter;
   }
 
+  // array of keys
   allKeys() {
     let current = this.head;
     let keys = [];
@@ -65,6 +66,7 @@ class LinkedList {
     return keys;
   }
 
+  // array of values
   allValues() {
     let current = this.head;
     let values = [];
@@ -76,7 +78,8 @@ class LinkedList {
     return values;
   }
 
-  allKeyValues() {
+  // array of key-value pairs
+  pair() {
     let current = this.head;
     let keyValues = [];
 
@@ -87,6 +90,7 @@ class LinkedList {
     return keyValues;
   }
 
+  // if key is found, replace value with the key
   containsKey(key, value) {
     let current = this.head;
 
@@ -99,6 +103,7 @@ class LinkedList {
     return false;
   }
 
+  // returns the key if it exists
   getKey(key) {
     let current = this.head;
 
@@ -111,6 +116,7 @@ class LinkedList {
     return null;
   }
 
+  // returns true or false if key does or does not exist 
   hasKey(key) {
     let current = this.head;
 
@@ -124,6 +130,7 @@ class LinkedList {
     return false;
   }
 
+  // removes and returns the head
   pop() {
     if (this.head == null) {
       return undefined;
@@ -134,6 +141,7 @@ class LinkedList {
     return pop;
   }
 
+  // takes key as an argument and removes the entry with that key
   removeKey(key) {
     let current = this.head;
     let previous = null;
@@ -145,7 +153,7 @@ class LinkedList {
           this.pop();
           return true;
         }
-        // change the pointer of the previous node from current node 
+        // else change the pointer of the previous node to remove the current one
         previous.nextNode = current.nextNode;
         return true;
       }
