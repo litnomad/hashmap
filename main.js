@@ -86,11 +86,7 @@ class HashMap {
   get(key) {
     const h = this.hash(key);
 
-    if (this.buckets[h].value(key)) {
-      return this.buckets[h].value(key);
-    }
-
-    return null;
+    return this.buckets[h].value(key);
   }
 
   // takes a key as an argument and returns true or false based on whether or not the key is in the hash map
@@ -104,11 +100,7 @@ class HashMap {
   remove(key) {
     const h = this.hash(key);
 
-    if (this.buckets[h].removeKey(key) === true) {
-      return true;
-    }
-
-    return false;
+    return this.buckets[h].removeKey(key);
   }
 
   // returns the number of stored keys in the hash map
