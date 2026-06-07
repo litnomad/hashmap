@@ -15,7 +15,7 @@ Create a HashMap class function that contains the following methods: set(key, va
 const test = new HashMap();
 ### Run methods
 test.set();\
-console.log(test.has());\
-console.log(test.get());
+console.log(test.has(key));\
+console.log(test.get(key));
 
 Tested in main.test.js. 
