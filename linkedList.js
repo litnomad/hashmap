@@ -90,34 +90,8 @@ class LinkedList {
     return keyValues;
   }
 
-  // if key is found, replace value with the key
-  containsKey(key, value) {
-    let current = this.head;
-
-    while (current !== null) {
-      if (Object.keys(current.value) == key) {
-        return (current.value[key] = value);
-      }
-      current = current.nextNode;
-    }
-    return false;
-  }
-
-  // returns the key if it exists
-  getKey(key) {
-    let current = this.head;
-
-    while (current !== null) {
-      if (Object.keys(current.value) == key) {
-        return Object.keys(current.value);
-      }
-      current = current.nextNode;
-    }
-    return null;
-  }
-
-  // returns true or false if key does or does not exist 
-  hasKey(key) {
+  // returns whether key does or does not exist as a boolean
+  contains(key) {
     let current = this.head;
 
     while (current !== null) {
@@ -126,8 +100,33 @@ class LinkedList {
       }
       current = current.nextNode;
     }
-
     return false;
+  }
+
+  // replaces value associated with key
+  replace(key, value) {
+    let current = this.head;
+
+    while (current !== null) {
+      if (Object.keys(current.value) == key) {
+        return (current.value[key] = value);
+      }
+      current = current.nextNode;
+    }
+    return null;
+  }
+
+  // returns the value associated with the key
+  value(key) {
+    let current = this.head;
+
+    while (current !== null) {
+      if (Object.keys(current.value) == key) {
+        return Object.values(current.value);
+      }
+      current = current.nextNode;
+    }
+    return null;
   }
 
   // removes and returns the head

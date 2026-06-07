@@ -41,13 +41,9 @@ class HashMap {
   set(key, value) {
     const h = this.hash(key);
 
-    if (this.buckets[h]) {
-      this.buckets[h].containsKey(key, value);
-      if (this.buckets[h].containsKey(key, value) === false) {
-        this.buckets[h].append({ [key]: value });
-      }
-    } else {
-      this.buckets[h] = new LinkedList();
+    if (this.buckets[h].contains(key) === true) {
+      this.buckets[h].replace(key, value);
+    } else if (this.buckets[h].contains(key) === false) {
       this.buckets[h].append({ [key]: value });
     }
 
@@ -56,10 +52,13 @@ class HashMap {
       const prevBuckets = this.buckets;
       this.buckets = [];
 
-      // double the storage capacity 
+      // double the storage capacity
       for (let i = 0; i < 2 * this.loadCapacity; i++) {
         this.buckets = this.buckets.concat(new LinkedList());
       }
+
+      // updates capacity after resizing
+      this.loadCapacity = this.buckets.length;
 
       // redistribute prevBuckets
       let newArray = [];
@@ -73,50 +72,42 @@ class HashMap {
         const previousValue = item[1];
 
         const h = this.hash(previousKey);
-        if (this.buckets[h]) {
-          this.buckets[h].containsKey(previousKey, previousValue);
-          if (
-            this.buckets[h].containsKey(previousKey, previousValue) === false
-          ) {
-            this.buckets[h].append({ [previousKey]: previousValue });
-          }
-        } else {
-          this.buckets[h] = new LinkedList();
+
+        if (this.buckets[h].contains(previousKey) === true) {
+          this.buckets[h].replace(previousKey, previousValue);
+        } else if (this.buckets[h].contains(previousKey) === false) {
           this.buckets[h].append({ [previousKey]: previousValue });
         }
       });
     }
-
-    console.log(this.buckets);
   }
 
   // takes one argument as a key and returns the value that is assigned to this key
   get(key) {
-    for (let i = 0; i < this.buckets.length; i++) {
-      if (this.buckets[i].getKey(key)) {
-        return this.buckets[i].getKey(key);
-      }
+    const h = this.hash(key);
+
+    if (this.buckets[h].value(key)) {
+      return this.buckets[h].value(key);
     }
+
     return null;
   }
 
   // takes a key as an argument and returns true or false based on whether or not the key is in the hash map
   has(key) {
-    for (let i = 0; i < this.buckets.length; i++) {
-      if (this.buckets[i].hasKey(key) === true) {
-        return true;
-      }
-    }
-    return false;
+    const h = this.hash(key);
+
+    return this.buckets[h].contains(key);
   }
 
   // takes a key as an argument. if the given key is in the hash map, it should remove the entry with that key and return true. if the key isn’t in the hash map, it should return false.
   remove(key) {
-    for (let i = 0; i < this.buckets.length; i++) {
-      if (this.buckets[i].removeKey(key) === true) {
-        return true;
-      }
+    const h = this.hash(key);
+
+    if (this.buckets[h].removeKey(key) === true) {
+      return true;
     }
+
     return false;
   }
 
