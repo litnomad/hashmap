@@ -1,0 +1,5 @@
+## HashMap
+A data structure that uses keys as indices, instead of a meaningless numbering of values in an array. Allows for a quick search speed of a key as an input.
+
+## Objective
+A HashMap class function that contains the following methods: set(key, value), has(key), get(key), remove(key), clear(), length(), keys(), values(), and entries() = [[firstKey, firstValue], [secondKey, secondValue]]. The hash function takes the key as an input and turns it into a hash code for bucket distribution, making use of a prime number to minimize the number of collisions. Because of the finite reality of buckets, each bucket is a Linked List used to store more than one values into nodes. An evenly distributed hash map will reduce the amount of searching we have to do to 1/n, where n is the number of buckets.
