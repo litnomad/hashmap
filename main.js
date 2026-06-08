@@ -49,37 +49,35 @@ class HashMap {
 
     // increase capacity when load factor is reached
     if (this.length() > this.loadCapacity * this.loadFactor) {
-      const prevBuckets = this.buckets;
-      this.buckets = [];
-
-      // double the storage capacity
-      for (let i = 0; i < 2 * this.loadCapacity; i++) {
-        this.buckets = this.buckets.concat(new LinkedList());
-      }
-
-      // updates capacity after resizing
-      this.loadCapacity = this.buckets.length;
-
-      // redistribute prevBuckets
-      let newArray = [];
-      for (let i = 0; i < prevBuckets.length; i++) {
-        const keyValues = prevBuckets[i].pair();
-        newArray = newArray.concat(...keyValues);
-      }
-
-      newArray.forEach((item) => {
-        const previousKey = item[0];
-        const previousValue = item[1];
-
-        const h = this.hash(previousKey);
-
-        if (this.buckets[h].contains(previousKey) === true) {
-          this.buckets[h].replace(previousKey, previousValue);
-        } else if (this.buckets[h].contains(previousKey) === false) {
-          this.buckets[h].append({ [previousKey]: previousValue });
-        }
-      });
+      this.increaseCapacity();
     }
+  }
+
+  increaseCapacity() {
+    const prevBuckets = this.buckets;
+    this.buckets = [];
+
+    // double the storage capacity
+    for (let i = 0; i < 2 * this.loadCapacity; i++) {
+      this.buckets = this.buckets.concat(new LinkedList());
+    }
+
+    // updates capacity after resizing
+    this.loadCapacity = this.buckets.length;
+
+    // redistribute prevBuckets
+    let newArray = [];
+    for (let i = 0; i < prevBuckets.length; i++) {
+      const keyValues = prevBuckets[i].pair();
+      newArray = newArray.concat(...keyValues);
+    }
+
+    newArray.forEach((item) => {
+      const previousKey = item[0];
+      const previousValue = item[1];
+
+      this.set(previousKey, previousValue);
+    });
   }
 
   // takes one argument as a key and returns the value that is assigned to this key
