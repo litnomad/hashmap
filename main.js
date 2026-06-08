@@ -1,27 +1,18 @@
 import { LinkedList } from "./linkedList.js";
 
 class HashMap {
-  constructor() {
-    this.buckets = [
-      new LinkedList(),
-      new LinkedList(),
-      new LinkedList(),
-      new LinkedList(),
-      new LinkedList(),
-      new LinkedList(),
-      new LinkedList(),
-      new LinkedList(),
-      new LinkedList(),
-      new LinkedList(),
-      new LinkedList(),
-      new LinkedList(),
-      new LinkedList(),
-      new LinkedList(),
-      new LinkedList(),
-      new LinkedList(),
-    ];
-    this.loadCapacity = this.buckets.length;
+  buckets = [];
+
+  constructor(capacity = 16) {
     this.loadFactor = 0.75;
+    this.loadCapacity = capacity;
+    this.create = this.createBuckets(capacity);
+  }
+
+  createBuckets() {
+    for (let i = 0; i < this.loadCapacity; i++) {
+      this.buckets.push(new LinkedList());
+    }
   }
 
   // generates hash code for key
@@ -31,7 +22,7 @@ class HashMap {
     const primeNumber = 31;
     for (let i = 0; i < key.length; i++) {
       hashCode =
-        (primeNumber * hashCode + key.charCodeAt(i)) % this.buckets.length;
+        (primeNumber * hashCode + key.charCodeAt(i)) % this.loadCapacity;
     }
 
     return hashCode;
@@ -47,37 +38,27 @@ class HashMap {
       this.buckets[h].append({ [key]: value });
     }
 
-    // increase capacity when load factor is reached
+    // if load factor is reached, increase buckets
     if (this.length() > this.loadCapacity * this.loadFactor) {
-      this.increaseCapacity();
+      this.growMap();
     }
   }
 
-  increaseCapacity() {
+  // increase buckets
+  growMap() {
+    this.loadCapacity = 2 * this.buckets.length;
     const prevBuckets = this.buckets;
     this.buckets = [];
+    this.createBuckets();
 
-    // double the storage capacity
-    for (let i = 0; i < 2 * this.loadCapacity; i++) {
-      this.buckets = this.buckets.concat(new LinkedList());
-    }
-
-    // updates capacity after resizing
-    this.loadCapacity = this.buckets.length;
-
-    // redistribute prevBuckets
-    let newArray = [];
+    // previous entries are hashed for new buckets
     for (let i = 0; i < prevBuckets.length; i++) {
-      const keyValues = prevBuckets[i].pair();
-      newArray = newArray.concat(...keyValues);
+      const entries = prevBuckets[i].pair().flat();
+
+      entries.forEach((item) => {
+        this.set(item[0], item[1]);
+      });
     }
-
-    newArray.forEach((item) => {
-      const previousKey = item[0];
-      const previousValue = item[1];
-
-      this.set(previousKey, previousValue);
-    });
   }
 
   // takes one argument as a key and returns the value that is assigned to this key
